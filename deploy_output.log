@@ -1,21 +1,2 @@
-Hardhat Ignition starting for [ CrowdFundModule ]...[2K[1GHardhat Ignition 🚀
-
-Deploying [ CrowdFundModule ]
-
-Batch #1
-  Executing CrowdFundModule#CrowdFund...
-
-[3A[0JBatch #1
-  Executing CrowdFundModule#CrowdFund...
-
-[3A[0JBatch #1
-  Executed CrowdFundModule#CrowdFund
-
-[3A[0JBatch #1
-  Executed CrowdFundModule#CrowdFund
-
-[ CrowdFundModule ] successfully deployed 🚀
-
-Deployed Addresses
-
-CrowdFundModule#CrowdFund - 0x5FbDB2315678afecb367f032d93F642f64180aa3
+正在部署 CrowdFund 合约...
+CrowdFund contract deployed to: 0x5FbDB2315678afecb367f032d93F642f64180aa3

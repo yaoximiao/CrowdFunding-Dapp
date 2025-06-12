@@ -15,32 +15,49 @@
 增加基于时间的早期捐赠奖励机制，例如，前 10 位捐款人可以获得额外的感谢或未来可能的福利。
 
 ### 文档结构
+```
 |-- artifacts
-    |-- build-info
-    |-- contracts
-        |-- CrowdFund.sol
 |-- cache
 |-- contracts
-    |-- CrowdFund.sol
 |-- ignition
-    |-- deployments
-        |-- chain-31337
-    |-- modules
-        |-- DeployCrowdFund.js
 |-- node_modules
-|-- scripts
-|-- src
-    |-- css
-    |-- images
-    |-- js
-    |-- index.html
-|-- tasks
 |-- test
-    |-- CrowdFund.test.js
+|-- frontend/                    
+    |-- public/
+        |-- index.html
+        |-- favicon.ico
+    |-- src/
+        |-- components/
+            |-- ProjectCard.js
+            |-- ProjectList.js
+            |-- CreateProject.js
+            |-- ContributeModal.js
+            |-- Navigation.js
+        |-- pages/
+            |-- Home.js
+            |-- MyProjects.js
+            |-- MyContributions.js
+            |-- AllProjects.js
+        |-- hooks/
+            |-- useContract.js
+            |-- useWeb3.js
+        |-- utils/
+            |-- web3Utils.js
+            |-- contractUtils.js
+        |-- App.js
+        |-- App.css
+        |-- index.js
+        |-- index.css
+    |-- package.json
+    |-- package-lock.json
+|-- scripts/                     
+    |-- setup-frontend.sh
 |-- .env.example
 |-- .gitignore
 |-- hardhat.config.js
 |-- package-lock.json
 |-- package.json
 |-- README.md
-
+|-- start_dev_environment.sh
+|-- stop_hardhat_node.sh
+```

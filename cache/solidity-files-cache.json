@@ -6,9 +6,8 @@
       "contentHash": "cda868f9321e4aff670327a9cb08d833",
       "sourceName": "contracts/CrowdFund.sol",
       "solcConfig": {
-        "version": "0.8.28",
+        "version": "0.8.9",
         "settings": {
-          "evmVersion": "paris",
           "optimizer": {
             "enabled": false,
             "runs": 200
