@@ -15,6 +15,7 @@
 增加基于时间的早期捐赠奖励机制，例如，前 10 位捐款人可以获得额外的感谢或未来可能的福利。
 
 ### 文档结构
+```
 |-- artifacts
     |-- build-info
     |-- contracts
@@ -43,4 +44,4 @@
 |-- package-lock.json
 |-- package.json
 |-- README.md
-
+```
