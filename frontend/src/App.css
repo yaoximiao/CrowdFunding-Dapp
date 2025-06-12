@@ -1,0 +1,11 @@
+/* --- START OF FILE src/App.css --- */
+
+/* 
+  main 元素是所有页面内容的容器。
+  我们给它一个上边距，防止内容紧贴着顶部的导航栏。
+  这个值应该大约是导航栏的高度。
+*/
+main {
+  padding-top: 1rem;
+}
+/* --- END OF FILE src/App.css --- */

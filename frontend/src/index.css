@@ -1,0 +1,43 @@
+/* --- START OF FILE src/index.css --- */
+
+/* 使用更现代的盒模型，让尺寸计算更直观 */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* 移除浏览器默认的边距和填充 */
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+li {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f8f9fa; /* 一个柔和的背景色 */
+  color: #212529; /* 默认文字颜色 */
+  line-height: 1.6;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+/* --- END OF FILE src/index.css --- */
