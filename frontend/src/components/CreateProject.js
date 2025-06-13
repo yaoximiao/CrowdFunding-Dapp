@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useContract } from '../hooks/useContract';
-import { createProject } from '../utils/contractUtils';
+import { createProjectWithMilestones } from '../utils/contractUtils'; 
 import './CreateProject.css';
 
 const CreateProject = ({ onProjectCreated }) => {
@@ -11,51 +11,73 @@ const CreateProject = ({ onProjectCreated }) => {
   const [description, setDescription] = useState('');
   const [goalAmount, setGoalAmount] = useState('');
   const [deadline, setDeadline] = useState('');
+  // 新增: 里程碑状态
+  const [milestones, setMilestones] = useState([{ description: '', releaseAmount: '' }]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const getMinDeadline = () => {
     const today = new Date();
-    today.setDate(today.getDate() + 1); // Deadline must be at least 1 day in the future
+    today.setTime(today.getTime() + 1 * 60 * 1000);
     return today.toISOString().slice(0, 16);
+  };
+
+  // 里程碑表单处理
+  const handleMilestoneChange = (index, event) => {
+    const values = [...milestones];
+    values[index][event.target.name] = event.target.value;
+    setMilestones(values);
+  };
+
+  const handleAddMilestone = () => {
+    setMilestones([...milestones, { description: '', releaseAmount: '' }]);
+  };
+
+  const handleRemoveMilestone = (index) => {
+    const values = [...milestones];
+    values.splice(index, 1);
+    setMilestones(values);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Client-side validation
-    if (!name || !description || !goalAmount || !deadline) {
-      setError('所有字段均为必填项');
+    // 客户端校验
+    const totalMilestoneAmount = milestones.reduce((acc, ms) => acc + (parseFloat(ms.releaseAmount) || 0), 0);
+    if (totalMilestoneAmount > parseFloat(goalAmount)) {
+      setError('所有里程碑的总金额不能超过筹款目标！');
       return;
     }
-    if (parseFloat(goalAmount) <= 0) {
-      setError('目标金额必须大于0');
-      return;
+    if (milestones.some(ms => !ms.description || !ms.releaseAmount)) {
+        setError('所有里程碑都必须填写描述和金额。');
+        return;
     }
 
     setLoading(true);
     try {
-      await createProject(contract, name, description, goalAmount, new Date(deadline));
-      // Reset form
+      const milestoneDescriptions = milestones.map(ms => ms.description);
+      const milestoneReleaseAmounts = milestones.map(ms => ms.releaseAmount);
+      
+      await createProjectWithMilestones(
+        contract, name, description, goalAmount, new Date(deadline), 
+        milestoneDescriptions, milestoneReleaseAmounts
+      );
+      
+      alert('项目创建成功！');
+      if (onProjectCreated) onProjectCreated();
+      setTimeout(() => refreshData(), 1000);
+      
+      // 清空表单
       setName('');
       setDescription('');
       setGoalAmount('');
       setDeadline('');
-      alert('项目创建成功！数据将在区块链确认后更新。');
-      // Callback to potentially trigger parent component actions
-      if(onProjectCreated) {
-        onProjectCreated();
-      }
-      // Refresh data after a short delay to allow for block confirmation
-      setTimeout(() => {
-        refreshData();
-      }, 1000);
+      setMilestones([{ description: '', releaseAmount: '' }]);
 
     } catch (err) {
       console.error('创建项目失败:', err);
-      const message = err.reason || err.message || '发生未知错误';
-      setError(`创建失败: ${message}`);
+      setError(`创建失败: ${err.reason || err.message}`);
     } finally {
       setLoading(false);
     }
@@ -63,52 +85,57 @@ const CreateProject = ({ onProjectCreated }) => {
 
   return (
     <div className="create-project-container">
-      <h2>🚀 发起一个新项目</h2>
+      <h2>🚀 发起一个带里程碑的项目</h2>
       <form onSubmit={handleSubmit} className="create-project-form">
+        {/* 基本信息表单 (name, description, etc.) */}
         <div className="form-group">
           <label htmlFor="name">项目名称</label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="例如：我的第一个DApp"
-            disabled={loading}
-          />
+          <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} required disabled={loading} />
         </div>
         <div className="form-group">
           <label htmlFor="description">项目描述</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="详细描述你的项目和资金用途"
-            disabled={loading}
-          />
+          <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} required disabled={loading} />
         </div>
         <div className="form-group">
           <label htmlFor="goal">筹款目标 (ETH)</label>
-          <input
-            type="number"
-            id="goal"
-            value={goalAmount}
-            onChange={(e) => setGoalAmount(e.target.value)}
-            placeholder="例如：10"
-            step="0.01"
-            min="0"
-            disabled={loading}
-          />
+          <input type="number" id="goal" value={goalAmount} onChange={(e) => setGoalAmount(e.target.value)} step="0.01" min="0" required disabled={loading} />
         </div>
         <div className="form-group">
           <label htmlFor="deadline">截止日期</label>
-          <input
-            type="datetime-local"
-            id="deadline"
-            value={deadline}
-            onChange={(e) => setDeadline(e.target.value)}
-            min={getMinDeadline()}
-            disabled={loading}
-          />
+          <input type="datetime-local" id="deadline" value={deadline} onChange={(e) => setDeadline(e.target.value)} min={getMinDeadline()} required disabled={loading} />
+        </div>
+
+        {/* 里程碑动态表单 */}
+        <div className="form-group">
+            <label>里程碑规划</label>
+            {milestones.map((milestone, index) => (
+                <div key={index} className="milestone-entry">
+                    <input
+                        type="text"
+                        name="description"
+                        placeholder={`里程碑 #${index + 1} 描述`}
+                        value={milestone.description}
+                        onChange={event => handleMilestoneChange(index, event)}
+                        required
+                        disabled={loading}
+                    />
+                    <input
+                        type="number"
+                        name="releaseAmount"
+                        placeholder="释放金额 (ETH)"
+                        value={milestone.releaseAmount}
+                        onChange={event => handleMilestoneChange(index, event)}
+                        step="0.01"
+                        min="0"
+                        required
+                        disabled={loading}
+                    />
+                    {milestones.length > 1 && (
+                        <button type="button" className="btn-remove" onClick={() => handleRemoveMilestone(index)} disabled={loading}>-</button>
+                    )}
+                </div>
+            ))}
+            <button type="button" className="btn-add" onClick={handleAddMilestone} disabled={loading}>+ 添加里程碑</button>
         </div>
 
         {error && <div className="form-error-message">{error}</div>}
@@ -124,5 +151,4 @@ const CreateProject = ({ onProjectCreated }) => {
 };
 
 export default CreateProject;
-
 /* --- END OF FILE components/CreateProject.js --- */

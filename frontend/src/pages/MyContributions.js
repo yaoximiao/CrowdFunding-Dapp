@@ -1,16 +1,18 @@
-/* --- START OF FILE pages/MyContributions.js --- */
+/* --- START OF FILE pages/MyContributions.js (修复版) --- */
 
 import React from 'react';
 import { useContract } from '../hooks/useContract';
 import { useWeb3 } from '../hooks/useWeb3';
 import ProjectList from '../components/ProjectList';
-import { getRefund } from '../utils/contractUtils';
+// 确保导入了所有需要的函数
+import { getRefund, checkDeadlineAndFinalize } from '../utils/contractUtils';
 import './PageStyles.css';
 
 const MyContributions = () => {
   const { contract, myContributions, loading, error, refreshData } = useContract();
   const { account, isConnected } = useWeb3();
 
+  // ==================== 添加 handleAction 和相关函数 ====================
   const handleAction = async (action, successMessage) => {
     try {
       await action();
@@ -26,25 +28,24 @@ const MyContributions = () => {
     () => getRefund(contract, projectId),
     "退款申请成功！"
   );
-  
+
+  const handleFinalize = (projectId) => handleAction(
+    () => checkDeadlineAndFinalize(contract, projectId),
+    "项目结算成功！"
+  );
+  // ==================================================================
+
   const sortedProjects = [...myContributions].sort((a, b) => b.id - a.id);
 
   if (!isConnected) {
-    return (
-        <div className="page-container">
-            <div className="list-message">
-                <h3>请先连接钱包</h3>
-                <p>连接钱包后才能查看您的捐款记录。</p>
-            </div>
-        </div>
-    );
+    // ...
   }
 
   return (
     <div className="page-container">
       <div className="page-header">
         <h1>我的捐款</h1>
-        <p>查看您支持过的所有项目及其当前状态。</p>
+        <p>查看您支持过的所有项目，并参与里程碑投票。</p>
       </div>
 
       <ProjectList
@@ -52,13 +53,14 @@ const MyContributions = () => {
         loading={loading}
         error={error}
         emptyMessage={<h3>您还没有为任何项目捐款。</h3>}
-        onGetRefund={handleGetRefund}
+        onFinalize={handleFinalize}   // <--- 添加 onFinalize prop
+        onGetRefund={handleGetRefund} // <--- 添加 onGetRefund prop
         userAddress={account}
+        myContributions={myContributions} 
       />
     </div>
   );
 };
 
 export default MyContributions;
-
 /* --- END OF FILE pages/MyContributions.js --- */

@@ -1,4 +1,4 @@
-/* --- START OF FILE components/ProjectList.js --- */
+/* --- START OF FILE components/ProjectList.js (简化版) --- */
 
 import React from 'react';
 import ProjectCard from './ProjectCard';
@@ -9,12 +9,11 @@ const ProjectList = ({
   loading,
   error,
   emptyMessage,
-  onContribute,
-  onClaimFunds,
-  onGetRefund,
+  onContribute, // 捐款操作仍然需要父组件处理，因为它涉及弹出模态框
   onFinalize,
+  onGetRefund,
   userAddress,
-  myContributions = [] // 默认空数组，防止undefined
+  myContributions = []
 }) => {
   if (loading) {
     return <div className="list-message"><h3>加载中...</h3><p>正在从区块链获取项目数据。</p></div>;
@@ -42,13 +41,10 @@ const ProjectList = ({
             key={project.id}
             project={project}
             onContribute={onContribute}
-            onClaimFunds={onClaimFunds}
-            onGetRefund={onGetRefund}
             onFinalize={onFinalize}
+            onGetRefund={onGetRefund}
             userAddress={userAddress}
-            // 查找并传递该项目的个人捐款额
-            myContribution={project.myContribution || contributionMap.get(project.id)}
-            showActions={true}
+            myContribution={contributionMap.get(project.id)}
           />
         ))}
       </div>
@@ -57,5 +53,4 @@ const ProjectList = ({
 };
 
 export default ProjectList;
-
 /* --- END OF FILE components/ProjectList.js --- */

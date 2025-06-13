@@ -1,9 +1,11 @@
+/* --- START OF FILE hooks/useContract.js (最终更新版) --- */
+
 import { useState, useEffect, useCallback } from 'react';
 import { getContract, getAllProjects, getUserCreatedProjects, getUserContributedProjects } from '../utils/contractUtils';
 import { useWeb3 } from './useWeb3';
 
 export const useContract = () => {
-  const { provider, signer, account } = useWeb3();
+  const { provider, signer, account } = useWeb3(); // 移除了 isConnected，因为没用到
   const [contract, setContract] = useState(null);
   const [projects, setProjects] = useState([]);
   const [myProjects, setMyProjects] = useState([]);
@@ -27,10 +29,8 @@ export const useContract = () => {
   // 获取所有项目
   const fetchAllProjects = useCallback(async () => {
     if (!contract) return;
-    
     setLoading(true);
     setError('');
-    
     try {
       const allProjects = await getAllProjects(contract);
       setProjects(allProjects);
@@ -45,10 +45,8 @@ export const useContract = () => {
   // 获取我创建的项目
   const fetchMyProjects = useCallback(async () => {
     if (!contract || !account) return;
-    
     setLoading(true);
     setError('');
-    
     try {
       const userProjects = await getUserCreatedProjects(contract, account);
       setMyProjects(userProjects);
@@ -63,10 +61,8 @@ export const useContract = () => {
   // 获取我参与的项目
   const fetchMyContributions = useCallback(async () => {
     if (!contract || !account) return;
-    
     setLoading(true);
     setError('');
-    
     try {
       const contributedProjects = await getUserContributedProjects(contract, account);
       setMyContributions(contributedProjects);
@@ -96,47 +92,47 @@ export const useContract = () => {
     }
   }, [contract, refreshData]);
 
-  // 监听合约事件
+  // ==========================================================
+  // === 事件监听器 (已更新以匹配新合约) ===
+  // ==========================================================
   useEffect(() => {
     if (!contract) return;
 
-    const handleProjectCreated = (projectId, creator, name, goalAmount, deadline) => {
-      console.log('新项目创建:', { projectId: projectId.toNumber(), creator, name });
+    // 定义所有事件处理器
+    const handleProjectCreated = (projectId) => {
+      console.log('✅ 事件: 新项目创建', { projectId: Number(projectId) });
       refreshData();
     };
-
-    const handleContributionMade = (projectId, contributor, amount) => {
-      console.log('新捐款:', { projectId: projectId.toNumber(), contributor, amount: amount.toString() });
+    const handleContributionMade = (projectId) => {
+      console.log('✅ 事件: 新捐款', { projectId: Number(projectId) });
       refreshData();
     };
-
-    const handleProjectSucceeded = (projectId) => {
-      console.log('项目成功:', { projectId: projectId.toNumber() });
+    const handleProjectStateChange = (projectId) => {
+      console.log('✅ 事件: 项目状态变更', { projectId: Number(projectId) });
       refreshData();
     };
-
-    const handleProjectFailed = (projectId) => {
-      console.log('项目失败:', { projectId: projectId.toNumber() });
+    const handleRefundIssued = (projectId) => {
+      console.log('✅ 事件: 退款发放', { projectId: Number(projectId) });
       refreshData();
     };
-
-    const handleFundsClaimed = (projectId, creator, amount) => {
-      console.log('资金提取:', { projectId: projectId.toNumber(), creator, amount: amount.toString() });
-      refreshData();
-    };
-
-    const handleRefundIssued = (projectId, contributor, amount) => {
-      console.log('退款发放:', { projectId: projectId.toNumber(), contributor, amount: amount.toString() });
-      refreshData();
-    };
+    // 新增里程碑事件处理器
+    const handleMilestoneEvent = (projectId) => {
+        console.log('✅ 事件: 里程碑相关活动', { projectId: Number(projectId) });
+        refreshData();
+    }
 
     // 注册事件监听器
     contract.on('ProjectCreated', handleProjectCreated);
     contract.on('ContributionMade', handleContributionMade);
-    contract.on('ProjectSucceeded', handleProjectSucceeded);
-    contract.on('ProjectFailed', handleProjectFailed);
-    contract.on('FundsClaimed', handleFundsClaimed);
+    contract.on('ProjectSucceeded', handleProjectStateChange);
+    contract.on('ProjectFailed', handleProjectStateChange);
     contract.on('RefundIssued', handleRefundIssued);
+    // 新的里程碑事件
+    contract.on('MilestoneVoteStarted', handleMilestoneEvent);
+    contract.on('VotedOnMilestone', handleMilestoneEvent);
+    contract.on('MilestoneFundsReleased', handleMilestoneEvent);
+    contract.on('MilestoneVoteFailed', handleMilestoneEvent);
+
 
     // 清理事件监听器
     return () => {
@@ -144,8 +140,12 @@ export const useContract = () => {
       contract.removeAllListeners('ContributionMade');
       contract.removeAllListeners('ProjectSucceeded');
       contract.removeAllListeners('ProjectFailed');
-      contract.removeAllListeners('FundsClaimed');
       contract.removeAllListeners('RefundIssued');
+      // 清理新的里程碑事件
+      contract.removeAllListeners('MilestoneVoteStarted');
+      contract.removeAllListeners('VotedOnMilestone');
+      contract.removeAllListeners('MilestoneFundsReleased');
+      contract.removeAllListeners('MilestoneVoteFailed');
     };
   }, [contract, refreshData]);
 
@@ -157,8 +157,7 @@ export const useContract = () => {
     loading,
     error,
     refreshData,
-    fetchAllProjects,
-    fetchMyProjects,
-    fetchMyContributions
   };
 };
+
+/* --- END OF FILE hooks/useContract.js --- */

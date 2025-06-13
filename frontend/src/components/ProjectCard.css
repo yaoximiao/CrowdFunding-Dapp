@@ -193,4 +193,37 @@
   .project-actions button {
     flex: none;
   }
+
+  .milestone-list {
+    margin-top: 1.5rem;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 1rem;
+  }
+  .milestone-list h4 {
+    margin-bottom: 1rem;
+  }
+  .milestone-item {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+  .milestone-item p {
+    margin: 0 0 0.5rem 0;
+  }
+  .vote-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .vote-stats {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 1rem;
+  }
+  .status-executed {
+    color: green;
+    font-weight: bold;
+  }
 }

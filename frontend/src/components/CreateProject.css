@@ -89,4 +89,33 @@
   border-left: 4px solid #c62828;
 }
 
+.milestone-entry {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  align-items: center;
+}
+.milestone-entry input[name="description"] {
+  flex: 3;
+}
+.milestone-entry input[name="releaseAmount"] {
+  flex: 1;
+}
+.btn-add, .btn-remove {
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  font-weight: bold;
+}
+.btn-add:hover, .btn-remove:hover {
+  background: #e0e0e0;
+}
+.btn-remove {
+    background-color: #ffebee;
+    border-color: #c62828;
+    color: #c62828;
+}
+
 /* --- END OF FILE components/CreateProject.css --- */

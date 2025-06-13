@@ -1,23 +1,24 @@
-/* --- START OF FILE pages/Home.js --- */
+/* --- START OF FILE pages/Home.js (修复版) --- */
 
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useContract } from '../hooks/useContract';
 import { useWeb3 } from '../hooks/useWeb3';
 import ProjectList from '../components/ProjectList';
-import { contributeToProject, checkDeadlineAndFinalize, claimFunds, getRefund } from '../utils/contractUtils';
+// 确保导入了 checkDeadlineAndFinalize
+import { contributeToProject, checkDeadlineAndFinalize } from '../utils/contractUtils'; 
 import './PageStyles.css';
 
 const Home = () => {
   const { contract, projects, loading, error, refreshData, myContributions } = useContract();
   const { account, isConnected, connect } = useWeb3();
 
-  // 筛选出正在筹款的项目
   const fundraisingProjects = projects
-    .filter(p => p.state === 0) // 0 is Fundraising state
-    .sort((a, b) => b.id - a.id) // 按最新创建的排序
-    .slice(0, 3); // 只显示最新的3个
+    .filter(p => Number(p.state) === 0)
+    .sort((a, b) => b.id - a.id)
+    .slice(0, 3);
 
+  // ==================== 添加 handleAction 和 handleFinalize ====================
   const handleAction = async (action, successMessage) => {
     try {
       await action();
@@ -33,18 +34,12 @@ const Home = () => {
     () => contributeToProject(contract, projectId, amount),
     "捐款成功！感谢您的支持！"
   );
+  
   const handleFinalize = (projectId) => handleAction(
     () => checkDeadlineAndFinalize(contract, projectId),
     "项目结算成功！"
   );
-  const handleClaimFunds = (projectId) => handleAction(
-    () => claimFunds(contract, projectId),
-    "资金提取成功！"
-  );
-  const handleGetRefund = (projectId) => handleAction(
-    () => getRefund(contract, projectId),
-    "退款申请成功！"
-  );
+  // =======================================================================
 
   return (
     <div className="page-container">
@@ -68,9 +63,7 @@ const Home = () => {
           error={error}
           emptyMessage={<h3>当前没有正在筹款的项目。</h3>}
           onContribute={handleContribute}
-          onFinalize={handleFinalize}
-          onClaimFunds={handleClaimFunds}
-          onGetRefund={handleGetRefund}
+          onFinalize={handleFinalize} // <--- 添加 onFinalize prop
           userAddress={account}
           myContributions={myContributions}
         />
@@ -80,5 +73,4 @@ const Home = () => {
 };
 
 export default Home;
-
 /* --- END OF FILE pages/Home.js --- */
