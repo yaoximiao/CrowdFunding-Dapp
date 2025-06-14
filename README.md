@@ -14,7 +14,7 @@
 实现基于目标完成度的阶段性资金释放 (简化版里程碑)，捐款达到一定比例后，或者在项目发起人标记完成某个里程碑后 ，允许释放一部分资金。
 增加基于时间的早期捐赠奖励机制，例如，前 10 位捐款人可以获得额外的感谢或未来可能的福利。
 
-### 文档结构
+### 项目结构
 ```
 |-- artifacts
 |-- cache
@@ -25,19 +25,27 @@
 |-- frontend/                    
     |-- public/
         |-- index.html
-        |-- favicon.ico
+        |-- manifest.json
     |-- src/
+        |-- abis/
+            |-- CrowdFund.json
         |-- components/
             |-- ProjectCard.js
             |-- ProjectList.js
             |-- CreateProject.js
             |-- ContributeModal.js
             |-- Navigation.js
+            |-- ProjectCard.css
+            |-- ProjectList.css
+            |-- CreateProject.css
+            |-- ContributeModal.css
+            |-- Navigation.css
         |-- pages/
             |-- Home.js
             |-- MyProjects.js
             |-- MyContributions.js
             |-- AllProjects.js
+            |-- PageStyle.css
         |-- hooks/
             |-- useContract.js
             |-- useWeb3.js
@@ -52,12 +60,14 @@
     |-- package-lock.json
 |-- scripts/                     
     |-- setup-frontend.sh
+    |-- deploy.js
 |-- .env.example
 |-- .gitignore
+|-- deploy_output.log
+|-- hardhat_node.log
 |-- hardhat.config.js
 |-- package-lock.json
 |-- package.json
 |-- README.md
 |-- start_dev_environment.sh
-|-- stop_hardhat_node.sh
 ```

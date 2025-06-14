@@ -11,7 +11,7 @@ const CreateProject = ({ onProjectCreated }) => {
   const [description, setDescription] = useState('');
   const [goalAmount, setGoalAmount] = useState('');
   const [deadline, setDeadline] = useState('');
-  // 新增: 里程碑状态
+  // 里程碑状态
   const [milestones, setMilestones] = useState([{ description: '', releaseAmount: '' }]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

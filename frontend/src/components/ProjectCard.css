@@ -226,4 +226,33 @@
     color: green;
     font-weight: bold;
   }
+  .early-bird-list {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #e3f2fd; 
+    border-left: 4px solid #2196F3;
+    border-radius: 8px;
+  }
+
+  .early-bird-list h5 {
+    margin: 0 0 0.5rem 0;
+    color: #1976D2;
+  }
+
+  .early-bird-list ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .early-bird-list li {
+    font-size: 0.9rem;
+    color: #1565C0;
+    margin-bottom: 0.25rem;
+    font-family: monospace;
+  }
+
+  .early-bird-list li:last-child {
+    margin-bottom: 0;
+  }
 }

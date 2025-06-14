@@ -60,7 +60,8 @@ contract CrowdFund {
     uint public projectCounter;
     mapping(uint => Project) public projects;
     mapping(uint => mapping(address => uint)) public contributions;
-    mapping(uint => address[]) public earlyBirds;
+    // mapping(uint => address[]) public earlyBirds;
+    mapping(uint => address[]) internal earlyBirds;
     mapping(uint => uint) public uniqueContributorCount;
 
     // --- 事件 ---
@@ -296,5 +297,14 @@ contract CrowdFund {
             );
         }
         return milestonesInfo;
+    }
+
+    /**
+     * @notice 获取指定项目的所有早期支持者地址
+     * @param _projectId 项目ID
+     * @return An array of addresses
+     */
+    function getEarlyBirds(uint _projectId) public view returns (address[] memory) {
+        return earlyBirds[_projectId];
     }
 }

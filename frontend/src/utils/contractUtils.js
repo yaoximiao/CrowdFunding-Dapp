@@ -129,8 +129,32 @@ export const contributeToProject = async (contract, projectId, amount) => {
     console.log(`向项目 ${projectId} 捐款 ${amount} ETH (${amountInWei.toString()} Wei)`);
     
     const tx = await contract.contribute(projectId, { value: amountInWei });
-    await tx.wait();
-    return tx;
+    const receipt = await tx.wait();
+    let isEarlyBird = false;
+    // 遍历回执中的所有日志
+    if (receipt.logs) {
+      for (const log of receipt.logs) {
+        try {
+          // 尝试用合约的 interface 解析日志
+          const parsedLog = contract.interface.parseLog(log);
+          // 检查解析出的日志名称是否是我们想要的
+          if (parsedLog && parsedLog.name === 'ContributionMade') {
+            // 检查贡献者是否是当前用户
+            if (parsedLog.args.contributor.toLowerCase() === (await contract.runner.getAddress()).toLowerCase()) {
+                // 获取 isEarlyBird 参数的值
+                isEarlyBird = parsedLog.args.isEarlyBird;
+                console.log('捐款事件解析成功: isEarlyBird =', isEarlyBird);
+                break; // 找到我们的事件，可以停止循环了
+            }
+          }
+        } catch (e) {
+          // 忽略无法解析的日志（可能是其他合约的事件）
+        }
+      }
+    }
+    // ================================================================
+
+    return isEarlyBird; // 返回布尔值
   } catch (error) {
     console.error('捐款失败:', error);
     throw error;
@@ -556,6 +580,21 @@ export const debugMilestoneFunction = async (contract, projectId) => {
     console.log('=== 调试结束 ===');
   } catch (error) {
     console.error('调试里程碑功能失败:', error);
+  }
+};
+
+
+/**
+ * 获取项目的早期支持者列表
+ */
+export const getEarlyBirds = async (contract, projectId) => {
+  try {
+    const earlyBirdsList = await contract.getEarlyBirds(projectId);
+    // 确保即使返回的是 null 或 undefined，我们也返回一个空数组
+    return earlyBirdsList || []; 
+  } catch (error) {
+    console.error(`获取项目 ${projectId} 的早期支持者失败:`, error);
+    return []; // 在发生任何错误时，都返回一个安全的空数组
   }
 };
 
